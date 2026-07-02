@@ -31,6 +31,15 @@ async def parse_card(
     )
 
 
+async def collect_cards(
+    client: httpx.AsyncClient,
+    links_of_cards: list[str],
+) -> list[CardScheme]:
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+    tasks = [parse_card(client, semaphore, link) for link in links_of_cards]
+    return await asyncio.gather(*tasks)
+
+
 async def parse_cards_by_search(
     host_url: str,
     text_search: str,
@@ -44,8 +53,13 @@ async def parse_cards_by_search(
             host_url=host_url,
         )
 
-        semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-        tasks = [parse_card(client, semaphore, link) for link in links_of_cards]
-        cards = await asyncio.gather(*tasks)
+        cards = await collect_cards(client, links_of_cards)
+
+    writer.save(cards)
+
+
+async def parse_cards_by_links(links_of_cards: list[str], writer: CardWriter):
+    async with httpx.AsyncClient() as client:
+        cards = await collect_cards(client, links_of_cards)
 
     writer.save(cards)
