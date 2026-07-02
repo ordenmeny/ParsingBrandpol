@@ -20,14 +20,14 @@
 * Наличие
 * Ссылку на товар
  
-Собранные данные записываются с CSV файл
+Собранные данные записываются в CSV файл
 
 Примеры использования:
 ```
 host_url - URL-сайта
 text_search - поиск
 writer - реализация сохранения через csv (CardWriter - протокол)
-parse_cards_by_search - функции, которая парсит карточки, найденные через поиск.
+parse_cards_by_search - функция, которая парсит карточки, найденные через поиск.
 ```
 
 ```python
@@ -43,15 +43,18 @@ links_of_cards - список из ссылок на конкретные кар
 ```
 ```python
 async def main() -> None:
-    links_of_cards = ["https://magbo.ru/catalog/detail/...", "https://magbo.ru/catalog/detail/..."]
-    writer = WriteToCsv(filename=text_search)
+    links_of_cards = [
+        "https://magbo.ru/catalog/detail/...", 
+        "https://magbo.ru/catalog/detail/..."
+    ]
+    writer = WriteToCsv(filename="new cards")
     await parse_cards_by_links(links_of_cards, writer)
 ```
 
 ### Файлы
 - run_parsing.py - реализации сценариев парсеров
 - html_getters.py - функции для получения html-страниц по url
-- parse_html - парсеры, которые работают уже с полученными html-страницами
+- parse_html.py - парсеры, которые работают уже с полученными html-страницами
 - writers.py - классы, которые занимаются сохранением карточек; в будущем могут быть добавлено новые реализации (например, сохранение в БД), основанные на классе-протоколе CardWriter
 - exceptions.py - кастомные исключения, например, PageNotFoundException
 - card_scheme.py - здесь находится CardScheme (доменная модель)
